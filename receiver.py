@@ -41,6 +41,11 @@ class Reciver:
                 print("\nam primit un fisier de tip data")
                 id, lungime, continut = self.decodeData(packet)
                 id = int(id)
+
+                aux = pachet_asteptat - 1
+                if( id == aux):
+                    pachet_asteptat -=1
+
                 print(f"pachet_asteptat {pachet_asteptat} = {id} id???")
                 if id == pachet_asteptat:
 
@@ -51,16 +56,12 @@ class Reciver:
                     if a > 0.3:
                         self.s.sendto(str(continut).encode('ascii'), address)
                         pachet_asteptat = pachet_asteptat + 1
-                       # counter+=1
-                       # if(counter == 5 ):
-                       #      counter = 0
-                       # print(f"______COUNTER = {counter}")
+
                     else:
                         self.s.sendto(str(404).encode('ascii'), address)
                         #------------
                         print(f"DAR ERROR LA RETRIMITERE -> pachet_asteptat_{pachet_asteptat}  -=   counter_{counter}")
                         #-----------
-
 
 
 

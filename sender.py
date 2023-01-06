@@ -21,7 +21,7 @@ class Sender:
 
         packetSize = 10
 
-        ce_nu_treb = 0;
+
         self.continut = wrap(file1, packetSize)
 
         fileName = fileName[fileName.rfind("/") + 1:]
@@ -32,7 +32,8 @@ class Sender:
         nrOfPackets = int(fileLength / packetSize)
         nrOfPackets = str(nrOfPackets).zfill(4)
         counter = 1
-        timp_introdus = 0.615
+
+        timp_introdus = 0.062
         print(f"numarul de octeti:{fileLength}")
         print(f"Fisierul necesita : {nrOfPackets} de pachete")
         opt = int(input("Ce doriti sa trimiteti catre server:\n"
@@ -63,24 +64,27 @@ class Sender:
                     stop = datetime.datetime.now()
                     delta_timp = stop - start
 
-                    print(f"*****{(delta_timp.total_seconds()  )}*****") #milisecunde
+                    print(f"*****{(delta_timp.total_seconds()  )}*****")
 
                     continut1 = continut1.decode('utf-8')
 
-                    ok = 0
-                    if(timp_introdus < float(delta_timp)):
-                        ok = 1
-                    if (continut1 == "404" or ok):
+
+                    delta = float(delta_timp.total_seconds())
+                    print(f"DELTA = {delta}   >   timp_introdus{timp_introdus} ? ")
+                    if(timp_introdus < delta):
+                       ok = 1
+                    else:
+                       ok = 0
+                    print(f"ok = {ok}")
+                    if ((continut1 == "404") or (ok == 1)):
+
                         print(f"----\ncontinut =  {continut1} || id = {self.pachetID}  || counter = {counter} || i = {i}\n")
-
-
                     else:
                         print(f"continut =  {continut1} || id = {self.pachetID}  || counter = {counter} || i = {i}")
                         self.asamblare.append(continut1)
                         self.pachetID = self.pachetID + 1
                         counter = counter + 1
                         i = i + 1;
-                    print(f" i este -> {i} si id este -> {self.pachetID} de fapt {counter}")
                 del self.continut[0:5]
                 self.pachetID -= self.windowSize
 
