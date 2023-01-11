@@ -26,11 +26,14 @@ class Sender:
         #self.root.iconphoto(True, tk.PhotoImage(file='cliente.png'))
         self.root.config(background="#dfede9")
 
-        self.T = tk.Text(self.root, height=32, width=82)
+        self.T = tk.Text(self.root, height=22, width=82)
+        self.ansLabel=tk.Label(self.root,text="Fisierul reasamblat:").place(x=200,y=390)
+        self.Tans = tk.Text(self.root, height=16, width=82)
         self.timer = tk.StringVar()
         self.n = tk.StringVar()
         self.opt = tk.StringVar()
         self.T.place(x=200, y=0)
+        self.Tans.place(x=200,y=420)
         self.a = tk.Button(self.root, text="Incarcati fisier", command=self.get_fisier).place(x=49, y=23)
         self.nLabel = tk.Label(self.root, text="   Dimensiunea ferestrei:").place(x=0, y = 100)
         self.nEntry = tk.Entry(self.root, textvariable=self.n).place(x=9, y = 120)
@@ -56,8 +59,6 @@ class Sender:
         file1 = file.read()
         self.windowSize = self.n.get()
         self.timer = self.timer.get()
-
-
 
         packetSize = 10
 
@@ -95,7 +96,6 @@ class Sender:
                     self.s.sendto(tosend.encode('ascii'), ("127.0.0.1", 5005))
                     address = 5005
                     self.T.insert(tk.END,"\n\nAm trimis catre SERVER pachetul:" + str(counter)+"\n")
-
                     time.sleep(0.05) #intarziere intentionata pentru a putea calcula timpul de transfer si primire
 
                     continut1, (addr, port) = self.s.recvfrom(1024)
@@ -135,12 +135,11 @@ class Sender:
                 del self.continut[0:5]
                 self.pachetID -= int(self.windowSize)
 
-
-
         for i in self.asamblare:
             print(i)
         for i in self.asamblare:
             print(i, end = " ")
+            self.Tans.insert(tk.END, str(i))
 
         self.s.close()
     def start(self):

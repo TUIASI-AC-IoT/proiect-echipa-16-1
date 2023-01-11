@@ -22,13 +22,14 @@ class Reciver:
     def validateLogin(self):
         self.UDP_IP=self.ip.get()
         self.UDP_PORT=self.port.get()
-        self.ok=2
+        self.var=1
+
     def interface(self):
 
         self.root=tk.Tk()
         self.root.geometry("920x720")
         self.root.title("SERVER")
-
+        self.var=tk.IntVar()
         self.root.iconphoto(True, tk.PhotoImage(file ='virtual-server-icon-7.png') )
         self.root.config(background="#dfede9")
 
@@ -39,8 +40,8 @@ class Reciver:
         self.IPEntry = tk.Entry(self.root, textvariable=self.ip).grid(row=1, column=1)
         self.PORTLabel = tk.Label(self.root, text="PORT").grid(row=2, column=0)
         self.PORTEntry = tk.Entry(self.root, textvariable=self.port, show='').grid(row=2, column=1)
-        self.CONNECTButton = tk.Button(self.root, text="CONNECT", command=self.validateLogin).grid(row=5, column=1)
-
+        self.CONNECTButton = tk.Button(self.root, text="CONNECT", command=self.validateLogin)
+        self.CONNECTButton.grid(row=5, column=1)
         self.T.place(x=200,y=0)
 
 
@@ -54,7 +55,6 @@ class Reciver:
         self.s.bind((self.UDP_IP, int(self.UDP_PORT)))
         print("witing for connecting")
         self.mesaj=tk.Label(self.root,text="✔Ai setat cu SUCCES iP si Port").place(x=32,y=70)
-
         pachet_asteptat = 1
         counter = 0;
         while True:
@@ -86,7 +86,7 @@ class Reciver:
 
                 print(f"pachet_asteptat {pachet_asteptat} = {id} id???")
                 if id == pachet_asteptat:
-                    self.T.insert(tk.END,"\t\tS-a receptionat pachetul: "+str(id)+"\n")
+                    self.T.insert(tk.END,"\t\tS-a receptionat pachetul: "+str(id)+" cu continutul:"+str(continut)+"\n")
                     print(f"s-a receptionat pachetul{id}")
                     print(continut)
                     a = random()
