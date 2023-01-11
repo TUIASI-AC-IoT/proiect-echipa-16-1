@@ -15,7 +15,8 @@ class Sender:
         self.continut = []
         self.asamblare = []
         self.pachetID=0
-
+        self.var=0
+        threading.Thread(target=self.interface).start()
 
     def interface(self):
 
@@ -42,7 +43,7 @@ class Sender:
 
         self.optLabel = tk.Label(self.root, text="  1 = Info | 2 = Data").place(x=9, y=240)
         self.optEntry = tk.Entry(self.root, textvariable=self.opt, show='').place(x=9, y=260)
-
+        self.Trimite = tk.Button(self.root, text="Trimite",command=self.startprogram).place(x=9, y=290)
 
         self.root.mainloop()
 
@@ -50,18 +51,15 @@ class Sender:
     def get_fisier(self):
         self.fileName=filedialog.askopenfilename()
 
+    def startprogram(self):
+        self.var=1
     def proces(self):
-        threading.Thread(target=self.interface).start()
-
-        time.sleep(12)
         fileName = self.fileName
         file = open(fileName, "r+")
         file1 = file.read()
         self.windowSize = self.n.get()
         self.timer = self.timer.get()
-
         packetSize = 10
-
         self.continut = wrap(file1, packetSize)
 
         fileName = fileName[fileName.rfind("/") + 1:]
@@ -100,7 +98,6 @@ class Sender:
 
                     continut1, (addr, port) = self.s.recvfrom(1024)
 
-
                     stop = datetime.datetime.now()
                     delta_timp = stop - start
 
@@ -131,15 +128,17 @@ class Sender:
                         self.asamblare.append(continut1)
                         self.pachetID = self.pachetID + 1
                         counter = counter + 1
-                        i = i + 1;
-                del self.continut[0:5]
-                self.pachetID -= int(self.windowSize)
+                        i = i + 1
+                        if (i == len(self.continut)):
+                            i = 999
+                            self.pachetID = 999
+            del self.continut[0:int(self.windowSize)]
 
         for i in self.asamblare:
             print(i)
         for i in self.asamblare:
             print(i, end = " ")
-            self.Tans.insert(tk.END, str(i))
+            self.Tans.insert(tk.END, str(i)+" ")
 
         self.s.close()
     def start(self):
@@ -147,4 +146,7 @@ class Sender:
         threading.Thread(target=self.proces).start()
 
 sender=Sender()
-sender.start()
+while int(sender.var)==0:
+    time.sleep(1)
+else:
+    sender.start()
