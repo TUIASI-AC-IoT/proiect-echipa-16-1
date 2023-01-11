@@ -132,7 +132,10 @@ class Sender:
                         self.pachetID = self.pachetID + 1
                         counter = counter + 1
                         i = i + 1;
-                del self.continut[0:5]
+                        if(i == len(self.continut)):
+                            i = 999
+                            self.pachetID = 999
+                del self.continut[0:int(self.windowSize)]
                 self.pachetID -= int(self.windowSize)
 
         for i in self.asamblare:
