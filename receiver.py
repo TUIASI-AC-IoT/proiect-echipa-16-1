@@ -67,6 +67,9 @@ class Reciver:
                 nrpachete, numefisier = self.decodarePachet(packet)
                 print(f"numarul de pachete:{nrpachete}")
                 print(f"numele fisierului:{numefisier}")
+                self.T.insert(tk.END, "\t\t      un fisier de tip info\n"
+                                      "Numarul de pachete:"+str(nrpachete)+"\n" 
+                                      "Numele Fisierului:"+str(numefisier)+"\n")
                 self.s.sendto("am primit mesajul".encode('utf-8'), address)
             if (packet[0] == "4"):
                 print("\nfisier de tip data")
@@ -100,7 +103,6 @@ class Reciver:
         threading.Thread(target=self.start).start()
 
 reciver = Reciver()
-print (reciver.var)
 while int(reciver.var)==0:
     time.sleep(1)
 else:

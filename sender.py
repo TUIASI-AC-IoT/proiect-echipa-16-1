@@ -15,7 +15,8 @@ class Sender:
         self.continut = []
         self.asamblare = []
         self.pachetID=0
-
+        self.var=0
+        threading.Thread(target=self.interface).start()
 
     def interface(self):
 
@@ -42,18 +43,16 @@ class Sender:
 
         self.optLabel = tk.Label(self.root, text="  1 = Info | 2 = Data").place(x=9, y=240)
         self.optEntry = tk.Entry(self.root, textvariable=self.opt, show='').place(x=9, y=260)
-
+        self.Trimite=tk.Button(self.root,text="Timite",command=self.startproces).place(x=9,y=290)
 
         self.root.mainloop()
 
-
+    def startproces(self):
+        self.var=1
     def get_fisier(self):
         self.fileName=filedialog.askopenfilename()
 
     def proces(self):
-        threading.Thread(target=self.interface).start()
-
-        time.sleep(12)
         fileName = self.fileName
         file = open(fileName, "r+")
         file1 = file.read()
@@ -81,7 +80,7 @@ class Sender:
             tosend = str(self.INFO) + nrOfPackets + fileName;
             tosend1 = bytes(tosend.encode())
             print(tosend1)
-
+            self.s.sendto(tosend.encode('ascii'), ("127.0.0.1", 5005))
         elif (opt == 2):
             print(f" len(self.continut) = {len(self.continut)}")
             while self.pachetID <len(self.continut):
@@ -142,7 +141,7 @@ class Sender:
             print(i)
         for i in self.asamblare:
             print(i, end = " ")
-            self.Tans.insert(tk.END, str(i))
+            self.Tans.insert(tk.END, str(i)+" ")
 
         self.s.close()
     def start(self):
@@ -150,4 +149,7 @@ class Sender:
         threading.Thread(target=self.proces).start()
 
 sender=Sender()
-sender.start()
+while int(sender.var)==0:
+    time.sleep(1)
+else:
+    sender.start()
