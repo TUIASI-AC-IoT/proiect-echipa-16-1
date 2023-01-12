@@ -17,6 +17,7 @@ class Sender:
         self.pachetID=0
         self.var=0
         threading.Thread(target=self.interface).start()
+        self.running=1
 
     def interface(self):
 
@@ -51,6 +52,7 @@ class Sender:
         self.var=1
     def get_fisier(self):
         self.fileName=filedialog.askopenfilename()
+        self.T.insert(tk.END, "Ati introdus fisierul: " + str(self.fileName) + "\n")
 
     def proces(self):
         fileName = self.fileName
@@ -58,11 +60,8 @@ class Sender:
         file1 = file.read()
         self.windowSize = self.n.get()
         self.timer = self.timer.get()
-
         packetSize = 10
-
         self.continut = wrap(file1, packetSize)
-
         fileName = fileName[fileName.rfind("/") + 1:]
         print(f"Ati incarcat fisierul: {fileName}")
         file.seek(0, 2);
@@ -71,7 +70,8 @@ class Sender:
         nrOfPackets = int(fileLength / packetSize)
         nrOfPackets = str(nrOfPackets).zfill(4)
         counter = 1
-
+        self.T.insert(tk.END, "Fisierul are dimensiunea de :"+str(fileLength)+" octeti\n")
+        self.T.insert(tk.END, "Fisierul este impartit in: " + str(nrOfPackets) + " de pachete\n")
         timp_introdus = self.timer
         print(f"numarul de octeti:{fileLength}")
         print(f"Fisierul necesita : {nrOfPackets} de pachete")
@@ -87,34 +87,23 @@ class Sender:
                #for i in range(self.windowSize):
                 i = 0
                 while(i < int(self.windowSize)):
-
                     tosend = str(self.DATA) + str(counter).zfill(4) + str(nrOfPackets).zfill(4) + str(self.continut[i]);
-
                     start = datetime.datetime.now()
-
                     self.s.sendto(tosend.encode('ascii'), ("127.0.0.1", 5005))
                     address = 5005
                     self.T.insert(tk.END,"\n\nAm trimis catre SERVER pachetul:" + str(counter)+"\n")
                     time.sleep(0.05) #intarziere intentionata pentru a putea calcula timpul de transfer si primire
-
                     continut1, (addr, port) = self.s.recvfrom(1024)
-
-
                     stop = datetime.datetime.now()
                     delta_timp = stop - start
-
                     print(f"***{(delta_timp.total_seconds()  )}***")
-
                     continut1 = continut1.decode('utf-8')
-
-
                     delta = float(delta_timp.total_seconds())
                     print(f"DELTA = {delta}   >   timp_introdus{timp_introdus} ? ")
                     if(float(timp_introdus) < delta):
                        ok = 1
                     else:
                        ok = 0
-
                     print(f"ok = {ok}")
                     if ((continut1 == "404") or (ok == 1)):
                         self.T.insert(tk.END, "\n_________________________________________________________________________________")
@@ -136,7 +125,6 @@ class Sender:
                             self.pachetID = 999
                 del self.continut[0:int(self.windowSize)]
                 self.pachetID -= int(self.windowSize)
-
         for i in self.asamblare:
             print(i)
         for i in self.asamblare:

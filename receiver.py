@@ -3,6 +3,7 @@ import time
 from random import random
 import tkinter as tk
 import threading
+from tkinter import messagebox
 class Reciver:
     def __init__(self):
         self.UDP_IP = ""
@@ -10,6 +11,42 @@ class Reciver:
         self.receptie=[]
         self.var=0
         threading.Thread(target=self.interface).start()
+
+    def validatePORT(self, PORT):
+        ok = True
+        if not PORT.isdigit():
+            ok = False
+        if ok:
+            if int(PORT) < 0 or int(PORT) > 65535:
+                ok = False
+            if ok:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def validateIP(self, IP):
+        ok = True
+        for i in range(len(IP)):
+            if IP[i] not in '0123456789.':
+                ok = False
+        if ok:
+            if IP.count('.') != 3:
+                ok = False
+            if ok:
+                list = IP.split('.')
+                for nr in list:
+                    if int(nr) < 0 or int(nr) > 255:
+                        ok = False
+                if ok:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
 
     def decodeData(self,packet):
         pID = packet[1:5]
@@ -22,10 +59,21 @@ class Reciver:
         fname = packet[5:]
         return packets, fname
 
-    def validateIp(self):
-        self.UDP_IP=self.ip.get()
-        self.UDP_PORT=self.port.get()
-        self.var=1
+    def validareadresa(self):
+        ok=True
+        if ok:
+            self.UDP_IP=self.ip.get()
+            self.UDP_PORT = self.port.get()
+            if self.validateIP(self.UDP_IP)==False:
+                tk.messagebox.showwarning("showwarning", "Adresa IP invalida")
+                ok=False
+            if self.validatePORT(self.UDP_PORT)==False:
+                tk.messagebox.showwarning("showwarning", "PORT invalid")
+                ok=False
+            if ok:
+                self.var = 1
+
+
 
     def interface(self):
 
@@ -42,7 +90,7 @@ class Reciver:
         self.IPEntry = tk.Entry(self.root, textvariable=self.ip).grid(row=1, column=1)
         self.PORTLabel = tk.Label(self.root, text="PORT").grid(row=2, column=0)
         self.PORTEntry = tk.Entry(self.root, textvariable=self.port, show='').grid(row=2, column=1)
-        self.CONNECTButton = tk.Button(self.root, text="START", command=self.validateIp)
+        self.CONNECTButton = tk.Button(self.root, text="START", command=self.validareadresa)
         self.CONNECTButton.grid(row=5, column=1)
         self.T.place(x=200,y=0)
         self.root.mainloop()
