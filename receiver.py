@@ -138,7 +138,7 @@ class Reciver:
                     print(f"s-a receptionat pachetul{id}")
                     print(continut)
                     a = random()
-                    if a > 0.03:
+                    if a > 0.05:
                         self.s.sendto(str(continut).encode('ascii'), address)
                         pachet_asteptat = pachet_asteptat + 1
                     else:

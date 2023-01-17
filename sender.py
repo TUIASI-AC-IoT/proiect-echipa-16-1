@@ -55,12 +55,15 @@ class Sender:
         self.T.insert(tk.END, "Ati introdus fisierul: " + str(self.fileName) + "\n")
 
     def proces(self):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        global z
         fileName = self.fileName
         file = open(fileName, "r+")
         file1 = file.read()
         self.windowSize = self.n.get()
         self.timer = self.timer.get()
         packetSize = 10
+        self.windowSize=int(self.windowSize)
         self.continut = wrap(file1, packetSize)
         fileName = fileName[fileName.rfind("/") + 1:]
         print(f"Ati incarcat fisierul: {fileName}")
@@ -80,19 +83,25 @@ class Sender:
             tosend = str(self.INFO) + nrOfPackets + fileName;
             tosend1 = bytes(tosend.encode())
             print(tosend1)
-            self.s.sendto(tosend.encode('ascii'), ("127.0.0.1", 5005))
+            self.s.sendto(tosend.encode('ascii'), ("127.0.0.3", 5005))
+
         elif (opt == 2):
             print(f" len(self.continut) = {len(self.continut)}")
-            while self.pachetID <len(self.continut):
-               #for i in range(self.windowSize):
-                i = 0
-                while(i < int(self.windowSize)):
-                    tosend = str(self.DATA) + str(counter).zfill(4) + str(nrOfPackets).zfill(4) + str(self.continut[i]);
+            i=1
+            frames=int(nrOfPackets)
+            while i <=frames:
+                z = 0
+                k=i
+                while k<i+self.windowSize and k<=frames:
+                    tosend = str(self.DATA) + str(k).zfill(4) + str(len(self.continut)).zfill(4)
                     start = datetime.datetime.now()
-                    self.s.sendto(tosend.encode('ascii'), ("127.0.0.1", 5005))
+                    self.s.sendto(tosend.encode('ascii'), ("127.0.0.3", 5005))
                     address = 5005
-                    self.T.insert(tk.END,"\n\nAm trimis catre SERVER pachetul:" + str(counter)+"\n")
-                    time.sleep(0.05) #intarziere intentionata pentru a putea calcula timpul de transfer si primire
+                    self.T.insert(tk.END, "\n\nAm trimis catre SERVER pachetul:" + str(k) + "\n")
+                    time.sleep(0.05)
+                    k=k+1
+                k1=i
+                while k1<i+self.windowSize and k1<=frames:
                     continut1, (addr, port) = self.s.recvfrom(1024)
                     stop = datetime.datetime.now()
                     delta_timp = stop - start
@@ -108,23 +117,20 @@ class Sender:
                     if ((continut1 == "404") or (ok == 1)):
                         self.T.insert(tk.END, "\n_________________________________________________________________________________")
                         if(continut1 == "404"):
-                            self.T.insert(tk.END,"\n✘ !EROARE PACHETUL  " + str(counter) + " NU A PUTUT AJUNGE! ✘")
+                            self.T.insert(tk.END,"\n✘ !EROARE PACHETUL  " + str(k1) + " NU A PUTUT AJUNGE! ✘")
                         if(ok == 1):
-                            self.T.insert(tk.END,"\n✘ Intarziere pachet "+str(counter) + ": (Timp de transfer__" + str(delta) + "  <  " + str(timp_introdus) + "__Timp introdus) ✘")
+                            self.T.insert(tk.END,"\n✘ Intarziere pachet "+str(k1) + ": (Timp de transfer__" + str(delta) + "  <  " + str(timp_introdus) + "__Timp introdus) ✘")
                         self.T.insert(tk.END, "\n_________________________________________________________________________________")
                         print(f"----\ncontinut =  {continut1} || id = {self.pachetID}  || counter = {counter} || i = {i}\n")
+                        break
                     else:
-                        self.T.insert(tk.END, "Pachetul: " + str(counter) + " a ajuns cu succes  ✔\n")
+                        self.T.insert(tk.END, "Pachetul: " + str(k1) + " a ajuns cu succes  ✔\n")
                         print(f"continut =  {continut1} || id = {self.pachetID}  || counter = {counter} || i = {i}")
                         self.asamblare.append(continut1)
-                        self.pachetID = self.pachetID + 1
-                        counter = counter + 1
-                        i = i + 1;
-                        if(i == len(self.continut)):
-                            i = 999
-                            self.pachetID = 999
-                del self.continut[0:int(self.windowSize)]
-                self.pachetID -= int(self.windowSize)
+                        del (self.continut[0:9])
+                        z=z+1
+                    k1=k1+1
+                i=i+z
         for i in self.asamblare:
             print(i)
         for i in self.asamblare:
@@ -133,7 +139,7 @@ class Sender:
 
         self.s.close()
     def start(self):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
         threading.Thread(target=self.proces).start()
 
 sender=Sender()
