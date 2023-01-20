@@ -102,7 +102,7 @@ class Reciver:
         self.s.bind((self.UDP_IP, int(self.UDP_PORT)))
         print("witing for connecting")
         self.mesaj=tk.Label(self.root,text="✔Ai setat cu SUCCES iP si Port").place(x=32,y=70)
-        pachet_asteptat = 1
+        pachet_asteptat = 0
         counter = 0;
         while True:
             #self.T.insert(tk.END, "waiting for conecting")
@@ -124,18 +124,16 @@ class Reciver:
                 id, lungime, continut = self.decodeData(packet)
                 id = int(id)
                 self.T.insert(tk.END, "\t\t      un fisier de tip data\n")
-                aux = pachet_asteptat - 1
-                old_pac = pachet_asteptat
-                if( id == aux):
-                    pachet_asteptat -=1
-                if(old_pac != pachet_asteptat):
-                    self.T.insert(tk.END, "\n\t\t✘TRANSMITEREA anterioara nu a intrat in timp✘\n\t\tPachet asteptat: " + str(pachet_asteptat) + " din nou..\n")
-                else:
-                    self.T.insert(tk.END, "\t\tPachet asteptat: " + str(pachet_asteptat) + "\n")
+                #if(pachet_asteptat > id):
+                #    self.T.insert(tk.END, "\n\t\t⏰✘TRANSMITEREA anterioara nu a intrat in timp✘\n\t\tPachet asteptat: " + str(pachet_asteptat + 1) + " din nou..\n")
+                #    print(f"pachet_asteptat {pachet_asteptat} = {id} id???!!!!")
+                #    pachet_asteptat = id
+                #else:
+                #    self.T.insert(tk.END, "\t\tPachet asteptat: " + str(id + 1) + "\n")
                 print(f"pachet_asteptat {pachet_asteptat} = {id} id???")
                 if id == pachet_asteptat:
-                    self.T.insert(tk.END,"\t\tS-a receptionat pachetul: "+str(id)+" cu continutul:"+str(continut)+"\n")
-                    print(f"s-a receptionat pachetul{id}")
+                    self.T.insert(tk.END,"\t\tS-a receptionat pachetul: "+str(id+1)+" cu continutul:"+str(continut)+"\n")
+                    print(f"s-a receptionat pachetul{id }")
                     print(continut)
                     a = random()
                     if a > 0.05:
@@ -144,9 +142,12 @@ class Reciver:
                     else:
                         self.s.sendto(str(404).encode('ascii'), address)
                         #------------
-                        self.T.insert(tk.END,"\t\t_______________________________________________\n\t\t✘ !EROARE LA RETRIMITEREA pachetului " + str(id) + "! ✘\n\t\t_______________________________________________\n\n")
+                        self.T.insert(tk.END,"\t\t▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂\n\t\t✘ !EROARE LA RETRIMITEREA pachetului " + str(id + 1) + "! ✘\n\t\t▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂\n\n")
                         print(f"EROARE LA RETRIMITERE ")
                         #-----------
+                else:
+                    self.T.insert(tk.END, "\t\t✱iGNORE")
+                    print(" iGNORE")
     def proces(self):
         threading.Thread(target=self.start).start()
 
